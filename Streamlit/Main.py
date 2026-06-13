@@ -11,23 +11,29 @@ with st.sidebar:
     st.header("Configuración")
     opcion = st.radio("Selecciona una opción:", ["Cargar Archivo", "Graficar"])
 
+
 # --- ESTADO DE LA SESIÓN ---
-# Esto guarda el DataFrame para que no desaparezca al hacer clic
-if 'df' not in st.session_state:
-    st.session_state.df = None
+# Inicializamos 'data_frames' en lugar de 'df'
+if 'data_frames' not in st.session_state:
+    st.session_state.data_frames = {}
 
 # --- LÓGICA ---
 if opcion == "Cargar Archivo":
     st.subheader("Selecciona tu archivo CSV")
     
     # El file_uploader es el estándar profesional
-    uploaded_file = st.file_uploader("Arrastra tu archivo aquí", type=['csv'])
+    # En la carga de archivos
+    # En la carga de archivos
+    uploaded_files = st.file_uploader("Sube tus archivos", accept_multiple_files=True)
+
+    if uploaded_files:
+        for file in uploaded_files:
+            # Usamos la clave 'data_frames' que acabamos de inicializar
+            if file.name not in st.session_state.data_frames:
+                st.session_state.data_frames[file.name] = pd.read_csv(file)
+                st.success(f"Archivo {file.name} cargado.")
+
     
-    if uploaded_file is not None:
-        st.session_state.df = pd.read_csv(uploaded_file)
-        st.success("¡Archivo cargado con éxito!")
-        st.write("Vista previa:")
-        st.dataframe(st.session_state.df.head())
 
 elif opcion == "Graficar":
     if st.session_state.df is not None:
