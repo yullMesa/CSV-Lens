@@ -9,7 +9,7 @@ st.title("📊 CSV-Lens")
 # --- SIDEBAR ---
 with st.sidebar:
     st.header("Configuración")
-    opcion = st.radio("Selecciona una opción:", ["Cargar Archivo", "Operaciones","Graficar"])
+    opcion = st.radio("Selecciona una opción:", ["Cargar Archivo", "Operaciones","Combinar Datos","Graficar"])
 
 
 # --- ESTADO DE LA SESIÓN ---
@@ -24,14 +24,24 @@ if opcion == "Cargar Archivo":
     # El file_uploader es el estándar profesional
     # En la carga de archivos
     # En la carga de archivos
-    uploaded_files = st.file_uploader("Sube tus archivos", accept_multiple_files=True)
+    # --- EN TU SECCIÓN DE CARGA ---
+    uploaded_files = st.file_uploader("Sube tus archivos", type=['csv'], accept_multiple_files=True)
 
     if uploaded_files:
+        # Solo procesamos si el archivo no estaba ya en memoria
         for file in uploaded_files:
-            # Usamos la clave 'data_frames' que acabamos de inicializar
             if file.name not in st.session_state.data_frames:
-                st.session_state.data_frames[file.name] = pd.read_csv(file)
-                st.success(f"Archivo {file.name} cargado.")
+                # IMPORTANTE: al usar read_csv, Pandas carga el contenido en memoria
+                df = pd.read_csv(file)
+                st.session_state.data_frames[file.name] = df
+                st.success(f"Archivo {file.name} cargado y guardado en estado.")
+
+        if uploaded_files:
+            for file in uploaded_files:
+                # Usamos la clave 'data_frames' que acabamos de inicializar
+                if file.name not in st.session_state.data_frames:
+                    st.session_state.data_frames[file.name] = pd.read_csv(file)
+                    st.success(f"Archivo {file.name} cargado.")
     # --- SECCIÓN DE VISUALIZACIÓN ---
 
     if st.session_state.data_frames:
@@ -95,15 +105,65 @@ elif opcion == "Operaciones":
 elif opcion == "Graficar":
     if st.session_state.data_frames:
         st.subheader("Generador de Gráficos")
-        archivo_a_graficar = st.selectbox("Elige el archivo para graficar", list(st.session_state.data_frames.keys()))
+        archivo_a_graficar = st.selectbox("Elige el archivo:", list(st.session_state.data_frames.keys()))
         df_grafico = st.session_state.data_frames[archivo_a_graficar]
         
-        columnas = df_grafico.columns.tolist()
-        col_x = st.selectbox("Eje X", columnas)
-        col_y = st.selectbox("Eje Y", columnas)
+        # --- AQUÍ LA MEJORA ---
+        # Separamos las columnas por tipo de dato
+        cols_numericas = df_grafico.select_dtypes(include=['number']).columns.tolist()
+        cols_categoricas = df_grafico.select_dtypes(exclude=['number']).columns.tolist()
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            eje_x = st.selectbox("Eje X (Categoría)", cols_categoricas)
+        with col2:
+            eje_y = st.selectbox("Eje Y (Valor numérico)", cols_numericas)
+        
+        # Agregamos una función de agregación (suma, promedio, conteo)
+        tipo_grafico = st.radio("¿Qué quieres calcular?", ["Suma", "Promedio", "Contar filas"])
         
         if st.button("Generar Gráfico"):
-            # Usamos bar_chart para que sea más legible que line_chart
-            st.bar_chart(df_grafico.groupby(col_x)[col_y].sum())
+            if tipo_grafico == "Suma":
+                resultado = df_grafico.groupby(eje_x)[eje_y].sum()
+            elif tipo_grafico == "Promedio":
+                resultado = df_grafico.groupby(eje_x)[eje_y].mean()
+            else:
+                resultado = df_grafico.groupby(eje_x)[eje_y].count()
+            
+            st.bar_chart(resultado)
+            st.write("Datos del gráfico:")
+            st.dataframe(resultado)
+
+elif opcion == "Combinar Datos":
+    st.subheader("🔗 Combinar tablas (Merge)")
+    if len(st.session_state.data_frames) < 2:
+        st.warning("Necesitas al menos 2 archivos cargados para combinar.")
     else:
-        st.warning("Por favor, primero carga archivos en la sección 'Cargar Archivo'.")
+        nombres = list(st.session_state.data_frames.keys())
+        # --- EN TU SECCIÓN DE COMBINAR TABLAS ---
+        tab_a = st.selectbox("Tabla Principal (Izquierda)", nombres, key="selectbox_tab_a")
+        tab_b = st.selectbox("Tabla a unir (Derecha)", nombres, key="selectbox_tab_b")
+
+        df_a = st.session_state.data_frames[tab_a]
+        df_b = st.session_state.data_frames[tab_b]
+
+        # Aquí es donde fallaba, al ser dinámico, necesita una llave dinámica también
+        col_a = st.selectbox(f"Columna clave en {tab_a}", df_a.columns, key="key_col_a")
+        col_b = st.selectbox(f"Columna clave en {tab_b}", df_b.columns, key="key_col_b")
+        
+        if st.button("Unir tablas"):
+            try:
+                # Realizamos el merge usando las dos columnas elegidas
+                df_final = pd.merge(df_a, df_b, left_on=col_a, right_on=col_b, how='inner')
+                
+                # Guardamos el resultado
+                nuevo_nombre = f"combinado_{tab_a.split('.')[0]}_{tab_b.split('.')[0]}.csv"
+                st.session_state.data_frames[nuevo_nombre] = df_final
+                
+                st.success(f"¡Éxito! Nueva tabla creada: {nuevo_nombre}")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Error al unir: {e}")
+
+st.sidebar.write("---")
+st.sidebar.write("Archivos en memoria:", list(st.session_state.data_frames.keys()))
