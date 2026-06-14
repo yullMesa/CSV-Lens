@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import requests
+import io
 
 # Configuración de la página
 st.set_page_config(page_title="CSV-Lens", layout="wide")
@@ -9,7 +11,7 @@ st.title("📊 CSV-Lens")
 # --- SIDEBAR ---
 with st.sidebar:
     st.header("Configuración")
-    opcion = st.radio("Selecciona una opción:", ["Cargar Archivo", "Operaciones","Combinar Datos","Graficar"])
+    opcion = st.radio("Selecciona una opción:", ["Cargar Archivo", "Operaciones","Combinar Datos","Graficar","Enviar a API"])
 
 
 # --- ESTADO DE LA SESIÓN ---
@@ -164,6 +166,33 @@ elif opcion == "Combinar Datos":
                 st.rerun()
             except Exception as e:
                 st.error(f"Error al unir: {e}")
+
+
+
+elif opcion == "Enviar a API":
+    st.subheader("🚀 Procesar en API Externa")
+    archivo_seleccionado = st.selectbox("Elige archivo a enviar", list(st.session_state.data_frames.keys()))
+    df = st.session_state.data_frames[archivo_seleccionado]
+    
+    if st.button("Enviar a FastAPI"):
+        # Convertimos el DataFrame a CSV en memoria para enviarlo como stream
+        csv_buffer = io.StringIO()
+        df.to_csv(csv_buffer, index=False)
+        
+        # Preparamos el archivo para el POST
+        files = {'file': ('data.csv', csv_buffer.getvalue())}
+        
+        try:
+            # Enviamos a tu endpoint (ejemplo local)
+            response = requests.post("http://localhost:8000/procesar-csv/", files=files)
+            
+            if response.status_code == 200:
+                st.success("¡Datos enviados y procesados correctamente!")
+                st.json(response.json()) # FastAPI responde con el resultado
+            else:
+                st.error(f"Error en la API: {response.text}")
+        except Exception as e:
+            st.error(f"No se pudo conectar con la API: {e}")
 
 st.sidebar.write("---")
 st.sidebar.write("Archivos en memoria:", list(st.session_state.data_frames.keys()))
