@@ -3,6 +3,7 @@ import streamlit as st
 import sqlite3
 
 
+
 st.title("🪪 Crud")
 
 # --- SIDEBAR ---
@@ -23,10 +24,30 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR) 
 DB_PATH = os.path.join(ROOT_DIR, "Data", "Data_info.db")
 
+
+
 def get_db_path():
-    # Aseguramos que apunte a la carpeta Data raíz
-    return os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Data", "Data_info.db")
+    # 1. Obtenemos la ruta
+    db_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "Data", "Data_info.db")
     
+    # 2. Verificamos si existe
+    if not os.path.exists(db_path):
+        # Aseguramos que la carpeta Data exista
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
+        
+        # 3. AQUÍ ESTÁ LA CLAVE: 
+        # Al conectar, SQLite crea el archivo físicamente en el disco
+        conn = sqlite3.connect(db_path)
+        conn.close() # Cerramos inmediatamente
+        
+        print(f"Archivo de base de datos creado en: {db_path}")
+        
+    # 4. Retornamos la ruta
+    return db_path
+
+get_db_path()
+
+
 
 if opcion == 'Crear':
     st.header("Creador de Tablas Dinámico")
