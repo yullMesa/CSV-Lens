@@ -96,14 +96,21 @@ if opcion == 'Crear':
     if st.button("Ejecutar CREATE TABLE"):
         query_cols = []
         for c in st.session_state.columnas_lista:
-            # Aquí incluimos el tamaño. 
-            # Nota: Algunos tipos en SQLite no usan paréntesis (como INTEGER), 
-            # pero para VARCHAR/TEXT es el estándar.
-            linea = f"{c['nombre']} {c['tipo']}({c['tamano']})"
+            # 1. Definir tipo y tamaño (si no es INTEGER)
+            if c['tipo'] == "INTEGER":
+                linea = f"{c['nombre']} INTEGER"
+            else:
+                linea = f"{c['nombre']} {c['tipo']}({c['tamano']})"
             
-            if c['pk']: 
+            # 2. Gestionar PRIMARY KEY y AUTOINCREMENT
+            if c['pk']:
                 linea += " PRIMARY KEY"
-            if c['fk']: 
+                # Si es INTEGER y PK, añadimos AUTOINCREMENT
+                if c['tipo'] == "INTEGER":
+                    linea += " AUTOINCREMENT"
+            
+            # 3. Añadir Foreign Key si aplica
+            if c['fk'] and c['ref_t'] and c['ref_c']:
                 linea += f" REFERENCES {c['ref_t']}({c['ref_c']})"
             
             query_cols.append(linea)
@@ -121,3 +128,46 @@ if opcion == 'Crear':
         except sqlite3.OperationalError as e:
             st.error(f"Error: {e}")
  
+
+if opcion == 'Leer':
+    pass
+
+
+if opcion == 'Adaptar':
+    st.header("Adaptar Estructura de Tabla")
+    
+    # 1. Seleccionar tabla
+    conn = sqlite3.connect(get_db_path())
+    cursor = conn.cursor()
+    cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    tablas = [t[0] for t in cursor.fetchall()]
+    tabla_a_modificar = st.selectbox("Elige tabla:", tablas)
+    
+    # 2. Obtener columnas actuales (PRAGMA table_info es tu mejor amigo)
+    cursor.execute(f"PRAGMA table_info({tabla_a_modificar})")
+    columnas_actuales = cursor.fetchall() # Devuelve (id, name, type, notnull, default, pk)
+    conn.close()
+
+    st.write("Columnas actuales (Puedes editar su definición):")
+    
+    # Formulario dinámico para editar columnas existentes
+    nuevas_definiciones = []
+    for col in columnas_actuales:
+        col_id, col_nombre, col_tipo, _, _, col_pk = col
+        
+        with st.expander(f"Columna: {col_nombre}"):
+            nuevo_nombre = st.text_input(f"Nuevo nombre para {col_nombre}", value=col_nombre, key=f"n_{col_id}")
+            nuevo_tipo = st.selectbox(f"Tipo para {col_nombre}", ["TEXT", "INTEGER", "REAL"], index=["TEXT", "INTEGER", "REAL"].index(col_tipo), key=f"t_{col_id}")
+            es_ai = st.checkbox("Auto Increment (Solo para INTEGER)", key=f"ai_{col_id}")
+            
+            nuevas_definiciones.append(f"{nuevo_nombre} {nuevo_tipo} {'PRIMARY KEY AUTOINCREMENT' if es_ai else ''}")
+
+    # 3. Botón para aplicar cambios (Ejecuta la migración)
+    if st.button("Aplicar Cambios a la Estructura"):
+        # Lógica de migración:
+        # A. Crear nueva tabla con nuevas_definiciones
+        # B. INSERT INTO nueva_tabla SELECT ... FROM vieja
+        # C. DROP TABLE vieja
+        # D. RENAME TABLE nueva TO vieja
+        st.info("Procesando migración de esquema...")
+        # (Aquí insertarías la lógica de ejecutar el script de migración)
