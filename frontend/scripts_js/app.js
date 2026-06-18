@@ -1,12 +1,35 @@
-function renderPage(page) {
-    const app = document.getElementById('app');
-    
-    // Aquí defines qué mostrar según la opción
-    const content = {
-        'home': '<h1>Inicio</h1><p>Bienvenido al dashboard principal.</p>',
-        'noticias': '<h1>Noticias</h1><p>Cargando últimas noticias...</p>',
-        'perfil': '<h1>Perfil</h1><p>Configuración de usuario.</p>'
-    };
+const contenedor = document.getElementById('app'); // Asegúrate de que este ID coincida con tu HTML
+const slides = [
+  { texto: "MURA: EL PODER DE LOS DATOS Y LA SEGURIDAD INFORMÁTICA.", descripcion: "Transformamos información compleja en decisiones inteligentes. Explora el futuro de tu análisis.", imagen: "../css/image/carrusel/seguridad.png" },
+  { texto: "Perfil de usuario", descripcion: "Gestiona tu cuenta", imagen: "img2.png" },
+  { texto: "Seguridad", descripcion: "Monitoreo en tiempo real", imagen: "img3.png" }
+];
 
-    app.innerHTML = content[page] || '<h1>404</h1>';
+// DECLARA LA VARIABLE AQUÍ (Faltaba esto en tu código)
+let indiceActual = 0;
+
+function renderizarSlide(slide) {
+  contenedor.innerHTML = `
+    <div class="slide-activo">
+        <div class="slide-texto">
+            <h2>${slide.texto}</h2>
+            <p>${slide.descripcion}</p>
+        </div>
+        <div class="slide-imagen">
+            <img src="${slide.imagen}" alt="Imagen">
+        </div>
+    </div>
+  `;
 }
+
+function siguienteSlide() {
+  const s = slides[indiceActual];
+  renderizarSlide(s);
+  
+  // Ahora sí la variable existe y puedes incrementarla
+  indiceActual = (indiceActual + 1) % slides.length;
+}
+
+// Llamadas iniciales
+siguienteSlide();
+setInterval(siguienteSlide, 4200);
