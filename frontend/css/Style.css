@@ -149,3 +149,47 @@ body {
     font-size: 0.8rem;
     color: oklch(60% 0.01 260);
 }
+
+
+/*Aqui empieza el codigo para register.html*/
+
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.auth-box {
+    background: oklch(20% 0.03 260);
+    padding: 40px;
+    border-radius: 15px;
+    border: 1px solid oklch(75% 0.25 150 / 0.3);
+    width: 100%;
+    max-width: 400px; /* Tamaño perfecto para formulario */
+    text-align: center;
+}
+
+.form-group {
+    margin: 20px 0;
+    text-align: left;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px;
+    background: oklch(15% 0.02 260);
+    border: 1px solid oklch(75% 0.25 150 / 0.2);
+    border-radius: 8px;
+    color: white;
+    box-sizing: border-box; /* Importante para que el padding no rompa el ancho */
+}
+
+.auth-link {
+    margin-top: 20px;
+    font-size: 0.9rem;
+}
+
+.auth-link a {
+    color: oklch(75% 0.25 150);
+}
