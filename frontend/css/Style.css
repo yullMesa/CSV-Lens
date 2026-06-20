@@ -131,3 +131,21 @@ body {
 }
 
 .feature-card h2 { color: oklch(75% 0.25 150); margin-bottom: 15px; }
+
+.site-footer {
+    padding: 80px 20px;
+    text-align: center;
+    background: oklch(15% 0.02 260); /* Un tono apenas más oscuro */
+    margin-top: 40px;
+    border-top: 1px solid oklch(75% 0.25 150 / 0.2);
+}
+
+.site-footer h2 {
+    margin-bottom: 15px;
+}
+
+.site-footer .copyright {
+    margin-top: 40px;
+    font-size: 0.8rem;
+    color: oklch(60% 0.01 260);
+}
