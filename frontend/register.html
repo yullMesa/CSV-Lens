@@ -3,15 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="css/style.css"> <!-- Asegúrate de que la ruta sea correcta -->
+    <link rel="shortcut icon" href="css/image/mura_favicon.png" type="image/x-icon">
     <title>Registro | Mura</title>
 </head>
 <body class="auth-page"> <!-- Clase especial para centrar el formulario -->
+
+    <a href="index.html" class="back-link">← Volver a Mura</a>
 
     <main class="container auth-box">
         <h1>Únete a Mura</h1>
         <p>Crea tu cuenta para comenzar.</p>
 
-        <form action="/registro" method="POST">
+        <form id="registerForm">
             <div class="form-group">
                 <label for="username">Nombre de usuario</label>
                 <input type="text" id="username" name="username" required>
@@ -22,11 +25,11 @@
                 <input type="password" id="password" name="password" required>
             </div>
 
-            <button type="submit" class="btn btn-primary">Registrarse</button>
+            <button type="button" id="btnRegistrar" class="btn btn-primary">Registrarse</button>
         </form>
         
         <p class="auth-link">¿Ya tienes cuenta? <a href="index.html">Inicia sesión</a></p>
     </main>
-
+    <script src="script/mura.js"></script>
 </body>
 </html>

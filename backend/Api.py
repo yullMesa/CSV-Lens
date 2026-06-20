@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from conection import get_db
 from passlib.context import CryptContext
 
+
 app = FastAPI()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
 

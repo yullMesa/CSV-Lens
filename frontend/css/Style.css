@@ -153,6 +153,21 @@ body {
 
 /*Aqui empieza el codigo para register.html*/
 
+.back-link {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: oklch(75% 0.25 150); /* El color verde de tu marca */
+    text-decoration: none;
+    font-size: 0.9rem;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.back-link:hover {
+    opacity: 1;
+}
+
 .auth-page {
     display: flex;
     justify-content: center;
