@@ -5,6 +5,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 from conection import get_db
 from passlib.context import CryptContext
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI()
@@ -13,6 +14,13 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Permite peticiones desde cualquier lugar (perfecto para desarrollo)
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite todos los métodos (POST, GET, etc.)
+    allow_headers=["*"],
+)
 
 @app.post("/register")
 def register(
