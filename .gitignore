@@ -1,2 +1,3 @@
-Data/Data_info.db
-Data/schema.py
+# Ignorar solo archivos específicos dentro de Data
+/Data/Data_info.db
+/Data/schema.py
