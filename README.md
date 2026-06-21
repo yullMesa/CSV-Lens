@@ -1,6 +1,6 @@
 # Mura
 
-[Español abajo]
+
 
 ## English
 Mura is a completely free platform dedicated to personal growth and learning. Currently, our system focuses on three core pillars: **Finance, Habits, and Health**. We are constantly evolving, and more categories will be added soon to help you become a better version of yourself.
