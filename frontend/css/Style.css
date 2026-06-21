@@ -153,6 +153,30 @@ body {
 
 /*Aqui empieza el codigo para register.html*/
 
+/* Ahora solo afecta a las listas que tengan la clase .menu-lateral */
+.menu-lateral {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-lateral li a {
+    display: block;
+    padding: 15px 20px;
+    color: var(--text-light);
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+/* Efecto Hover solo para elementos dentro de .menu-lateral */
+.menu-lateral li a:hover {
+    background-color: oklch(25% 0.1 260);
+    border-left: 4px solid var(--primary-neon);
+    color: var(--primary-neon);
+}
+
 .back-link {
     position: absolute;
     top: 20px;
@@ -208,4 +232,89 @@ body {
 .auth-link a {
     color: oklch(75% 0.25 150);
 }
+
+/*Aqui empeiza el estilo de mura.html*/
+
+/* Layout Principal */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+}
+
+.sidebar {
+    width: 250px;
+    background-color: var(--header-bg);
+    padding: 20px;
+    border-right: 1px solid var(--primary-neon);
+}
+
+
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Centra verticalmente */
+  align-items: center;     /* Centra horizontalmente */
+  min-height: 100vh;       /* Ocupa toda la altura de la pantalla */
+  width: 100%;             /* Asegura que ocupe todo el ancho disponible */
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.intro {
+  text-align: center;      /* Asegura que el texto dentro también esté centrado */
+  margin-bottom: 3rem;
+}
+
+.cards-container {
+  display: grid;
+  /* Ajustamos el minmax: 300px permite que quepan varias en fila */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+  gap: 2rem;
+  width: 95%;          /* Ocupa casi todo el ancho disponible */
+  max-width: 1200px;   
+  margin: 0 auto;      /* Centrado total */
+  padding: 2rem 0;
+}
+
+.card {
+  display: flex;       
+  align-items: center; /* Centra verticalmente imagen y texto */
+  gap: 1.5rem;         /* Espacio entre imagen y texto */
+  background: color-mix(in oklch, var(--bg-dark), white 5%);
+  border: 1px solid var(--accent-blue);
+  border-radius: 16px;
+  padding: 1.5rem;
+  min-height: 150px;   /* Asegura que el cuadro sea alto */
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  border-color: var(--primary-neon);
+}
+
+.card img {
+  width: 120px;        /* Tamaño fijo para la imagen */
+  height: 170px;       /* Mismo tamaño para que sea un cuadrado perfecto */
+  object-fit: cover;   /* Asegura que la imagen llene el espacio sin deformarse */
+  border-radius: 8px;
+  flex-shrink: 0;      /* IMPORTANTE: Evita que la imagen se encoja */
+}
+
+.card-content {
+  flex: 1;             /* Permite que el texto ocupe el resto del espacio */
+  text-align: left;
+}
+
+.card button {
+  background: var(--primary-neon);
+  color: var(--bg-dark);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
 
